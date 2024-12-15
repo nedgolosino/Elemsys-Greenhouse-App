@@ -1,4 +1,4 @@
-import { TouchableOpacity, Text } from "react-native";
+import { TouchableOpacity, Text, GestureResponderEvent } from "react-native";
 import React from "react";
 
 interface CustomButtonProps {
@@ -7,6 +7,7 @@ interface CustomButtonProps {
   containerStyles?: string;
   textStyles?: string;
   isLoading?: boolean;
+  handlePress: ((event: GestureResponderEvent) => void)
 }
 
 const CustomButton = ({
@@ -15,6 +16,7 @@ const CustomButton = ({
   containerStyles,
   textStyles,
   isLoading,
+  handlePress
 }: CustomButtonProps) => {
   return (
     <TouchableOpacity
@@ -23,8 +25,9 @@ const CustomButton = ({
         isLoading ? "opacity-50" : ""
       }`}
       disabled={isLoading}
+      onPress={handlePress}
     >
-      <Text className="text-primary font-pmedium text-lg text-white">
+      <Text className={textStyles}>
         {title}
       </Text>
     </TouchableOpacity>
