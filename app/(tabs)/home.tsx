@@ -6,10 +6,12 @@ import Card from "@/components/Card";
 import { router } from "expo-router"; 
 import { StatusBar } from "expo-status-bar";
 import { database } from "../../firebaseConfig";
-import { ref, onValue } from "firebase/database";
+import { ref, onValue, set } from "firebase/database";
 
 const home = () => {
   const [fanStatus, setFanStatus] = useState<boolean>(false);
+  const [sprinkleStatus,setSprinkleStatus] = useState<boolean>(false);
+  const [manualStatus,setManualStatus] = useState<boolean>(false);
 
   // Data from database
   const [temperature, setTemperature] = useState<null | number>(null);
@@ -18,9 +20,43 @@ const home = () => {
   const [light, setLight] = useState<null | number>(null);
   const [humidity, setHumidity] = useState<null | number>(null);
 
-  const toggleFan = () => {
+  const fanRelay = async () => {
     setFanStatus(prev => !prev); // Toggle the state
+
+    const dataRef = ref(database, "control/fan");
+
+    try {
+      const fan = !fanStatus; 
+      await set(dataRef, fan ? "1" : "0"); 
+      console.log("Data written successfully!");
+    } catch (error) {
+      console.error("Error writing data: ", error);
+    }
   };
+
+  const pumpRelay = async () => {
+    const dataRef = ref(database, "control/sprinkler");
+
+    try {
+      const sprinkle = !sprinkleStatus; 
+      await set(dataRef, sprinkle ? "1" : "0"); 
+      console.log("Data written successfully!");
+    } catch (error) {
+      console.error("Error writing data: ", error);
+    }
+  }
+
+  const manualDataMutation = async () => {
+    const dataRef = ref(database, "control/manual");
+
+    try {
+      const manualStat = !manualStatus; 
+      await set(dataRef, manualStat ? "1" : "0"); 
+      console.log("Data written successfully!");
+    } catch (error) {
+      console.error("Error writing data: ", error);
+    }
+  }
   
   useEffect(() => {
     // Reference to the temperature endpoint
@@ -29,6 +65,56 @@ const home = () => {
     const co2Ref = ref(database, "sensorData/co2");
     const lightRef = ref(database, "sensorData/light");
     const humidityRef = ref(database, "sensorData/humidity");
+    
+    // status
+    const waterRef = ref(database,"control/sprinkler");
+    const fanRef = ref(database,"control/fan");
+    const manualRef = ref(database,"control/manual");
+
+    const unsubscribeWater = onValue(
+      waterRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          setSprinkleStatus(snapshot.val() == "1" ? true : false);
+        } else {
+          console.log("No data available");
+          setSprinkleStatus(false);
+        }
+      },
+      (error) => {
+        console.error("Error reading data:", error);
+      }
+    );
+
+    const unsubscribeFan = onValue(
+      fanRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          setFanStatus(snapshot.val() == "1" ? true : false);
+        } else {
+          console.log("No data available");
+          setFanStatus(false);
+        }
+      },
+      (error) => {
+        console.error("Error reading data:", error);
+      }
+    );
+
+    const unsubscribeManual = onValue(
+      manualRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          setManualStatus(snapshot.val() == "1" ? true : false);
+        } else {
+          console.log("No data available");
+          setManualStatus(false);
+        }
+      },
+      (error) => {
+        console.error("Error reading data:", error);
+      }
+    );
 
     // Set up a real-time listener
     const unsubscribeTemp = onValue(
@@ -89,6 +175,10 @@ const home = () => {
 
     // Cleanup the listener when the component unmounts
     return () => {
+      unsubscribeWater();
+      unsubscribeFan();
+      unsubscribeManual();
+
       unsubscribeTemp();
       unsubscribeMoisture();
       unsubscribeCo2();
@@ -99,7 +189,7 @@ const home = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white mx-4">
-      <View className="items-center justify-center mt-20 mb-10">
+      <View className="items-center justify-center mt-10 mb-10">
         <Text className="text-3xl font-bold text-green-800">Home</Text>
       </View>
       <View className="flex-1">
@@ -121,14 +211,23 @@ const home = () => {
           colorStyles={fanStatus ? "bg-primary mb-5" : "border border-primary mb-5 text-primary"}
           containerStyles="w-full"
           textStyles={`${fanStatus ? 'text-white' : 'text-primary'}  font-pmedium text-lg`}
-          handlePress={toggleFan}
+          handlePress={fanRelay}
+          disable={!manualStatus}
         />
 
-        <ControlButton title="Water"
-          colorStyles="bg-primary"
+        <ControlButton title={`Water : ${sprinkleStatus ? 'On' : 'Off'}`}
+          colorStyles={sprinkleStatus ? "bg-primary mb-5" : "border border-primary mb-5 text-primary"}
           containerStyles="w-full"
-          textStyles="text-white"
-          handlePress={() => {}}
+          textStyles={`${sprinkleStatus ? 'text-white' : 'text-primary'}  font-pmedium text-lg`}
+          handlePress={pumpRelay}
+          disable={!manualStatus}
+        />
+
+        <ControlButton title={`${manualStatus ? 'Manual' : 'Automatic'}`}
+          colorStyles={manualStatus ? "bg-primary mb-5" : "border border-primary mb-5 text-primary"}
+          containerStyles="w-full"
+          textStyles={`${manualStatus ? 'text-white' : 'text-primary'}  font-pmedium text-lg`}
+          handlePress={manualDataMutation}
         />
 
       </View>
