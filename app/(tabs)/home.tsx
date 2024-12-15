@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Button from "@/components/Button";
 import ControlButton from "@/components/ControlButton";
 import Card from "@/components/Card";
-import { router } from "expo-router";
+import { router } from "expo-router"; 
 import { StatusBar } from "expo-status-bar";
 
 const home = () => {
@@ -22,20 +22,20 @@ const home = () => {
       </View>
       <View className="flex-1">
         <View className="flex-row justify-around flex-wrap mb-10">
-          <Card title="Moisture" textColor="text-green-700" borderColor="border-green-800"/>
-          <Card title="C02" textColor="text-green-700" borderColor="border-green-800"/>
+          <Card title="Moisture:" textColor="text-green-700" borderColor="border-green-800" data={`\n ${69}`}/>
+          <Card title="C02:" textColor="text-green-700" borderColor="border-green-800" data={`\n ${69}`}/>
         </View>  
         <View className="flex-row justify-around flex-wrap">
           <TouchableOpacity onPress={toggleLight}>
             <Card title={`Light :\n ${lightStatus ? 'On' : 'Off'}`} 
             textColor={lightStatus ? "text-green-700" : "text-black" }
-            borderColor={lightStatus ? "border-green-800" : "border-black-800"}/>
+            borderColor={lightStatus ? "border-green-800" : "border-black-800"}
+            data={undefined}/>
           </TouchableOpacity>
-          <Card title="Temperature" textColor="text-green-700" borderColor="border-green-800"/>
+          <Card title="Temperature:" textColor="text-green-700" borderColor="border-green-800" data={`\n ${69}`}/>
         </View>
         <View className="items-center justify-center mt-10">
-        <ControlButton 
-          title="Water"
+        <ControlButton title="Water"
           colorStyles="bg-primary"
           containerStyles="w-full"/>
       </View>
