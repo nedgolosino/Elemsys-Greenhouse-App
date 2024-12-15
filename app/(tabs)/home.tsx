@@ -193,44 +193,87 @@ const home = () => {
         <Text className="text-3xl font-bold text-green-800">Home</Text>
       </View>
       <View className="flex-1">
-        <View className="flex-row justify-around flex-wrap">
-          <Card title="Moisture:" textColor="text-green-700" borderColor="border-green-800" data={moisture != null ? `${moisture} %` : 'No Data'}/>
-          <Card title="C02:" textColor="text-green-700" borderColor="border-green-800" data={co2 != null ? `${co2.toFixed(2)} ppm` : 'No Data'}/>
-        </View>  
-        <View className="flex-row justify-around flex-wrap">
-          <Card title="Light:" textColor="text-green-700" borderColor="border-green-800" data={light != null ? `${light} lux` : 'No Data'}/>
-          <Card title="Temperature:" textColor="text-green-700" borderColor="border-green-800" data={temperature != null ? `${temperature} C` : 'No Data'}/>
+
+        <View className="flex-row flex-wrap">
+          <View className="w-1/2 p-2">
+            <Card 
+              title="Moisture:" 
+              type={"moisture"}
+              textColor="text-black" 
+              borderColor="border-primary" 
+              data={moisture != null ? `${moisture} %` : 'No Data'}
+              val={moisture} 
+            />   
+          </View>  
+          <View className="w-1/2 p-2">
+            <Card 
+              title="C02:" 
+              type={"co2"}
+              textColor="text-black" 
+              borderColor="border-primary" 
+              data={co2 != null ? `${co2.toFixed(2)} ppm` : 'No Data'}
+              val={co2} 
+            />
+          </View>
+
+          <View className="w-1/2 p-2">
+            <Card 
+              title="Light:" 
+              type={"light"}
+              textColor="text-black" 
+              borderColor="border-primary"  
+              data={light != null ? `${light} lux` : 'No Data'}
+              val={light} 
+            />   
+          </View>  
+          <View className="w-1/2 p-2">
+            <Card 
+              type={"temperature"} 
+              title="Temperature:" 
+              textColor="text-black" 
+              borderColor="border-primary" 
+              data={temperature != null ? `${temperature} C` : 'No Data'}
+              val={temperature}
+            />
+          </View>
+
+          <View className="w-1/2 p-2">
+            <Card 
+              title="Humidity:" 
+              type={"humidity"}
+              textColor="text-black" 
+              borderColor="border-primary" 
+              data={humidity != null ? `${humidity} % RH` : 'No Data'}
+              val={humidity} 
+            />
+          </View>
         </View>
-        <View className="flex-row justify-around flex-wrap">
-          <Card title="Humidity:" textColor="text-green-700" borderColor="border-green-800" data={humidity != null ? `${humidity} % RH` : 'No Data'}/>
+
+        <View className="items-center justify-center mt-5">
+
+          <ControlButton title={`Fan : ${fanStatus ? 'On' : 'Off'}`}
+            colorStyles={fanStatus ? "bg-primary mb-5" : "border border-primary mb-5 text-primary"}
+            containerStyles="w-full"
+            textStyles={`${fanStatus ? 'text-white' : 'text-primary'}  font-pmedium text-lg`}
+            handlePress={fanRelay}
+            disable={!manualStatus}
+          />
+
+          <ControlButton title={`Water : ${sprinkleStatus ? 'On' : 'Off'}`}
+            colorStyles={sprinkleStatus ? "bg-primary mb-5" : "border border-primary mb-5 text-primary"}
+            containerStyles="w-full"
+            textStyles={`${sprinkleStatus ? 'text-white' : 'text-primary'}  font-pmedium text-lg`}
+            handlePress={pumpRelay}
+            disable={!manualStatus}
+          />
+
+          <ControlButton title={`${manualStatus ? 'Manual' : 'Automatic'}`}
+            colorStyles={manualStatus ? "bg-primary mb-5" : "border border-primary mb-5 text-primary"}
+            containerStyles="w-full"
+            textStyles={`${manualStatus ? 'text-white' : 'text-primary'}  font-pmedium text-lg`}
+            handlePress={manualDataMutation}
+          />
         </View>
-
-        <View className="items-center justify-center mt-10">
-
-        <ControlButton title={`Fan : ${fanStatus ? 'On' : 'Off'}`}
-          colorStyles={fanStatus ? "bg-primary mb-5" : "border border-primary mb-5 text-primary"}
-          containerStyles="w-full"
-          textStyles={`${fanStatus ? 'text-white' : 'text-primary'}  font-pmedium text-lg`}
-          handlePress={fanRelay}
-          disable={!manualStatus}
-        />
-
-        <ControlButton title={`Water : ${sprinkleStatus ? 'On' : 'Off'}`}
-          colorStyles={sprinkleStatus ? "bg-primary mb-5" : "border border-primary mb-5 text-primary"}
-          containerStyles="w-full"
-          textStyles={`${sprinkleStatus ? 'text-white' : 'text-primary'}  font-pmedium text-lg`}
-          handlePress={pumpRelay}
-          disable={!manualStatus}
-        />
-
-        <ControlButton title={`${manualStatus ? 'Manual' : 'Automatic'}`}
-          colorStyles={manualStatus ? "bg-primary mb-5" : "border border-primary mb-5 text-primary"}
-          containerStyles="w-full"
-          textStyles={`${manualStatus ? 'text-white' : 'text-primary'}  font-pmedium text-lg`}
-          handlePress={manualDataMutation}
-        />
-
-      </View>
       </View>
       <StatusBar style="auto" />
     </SafeAreaView>
